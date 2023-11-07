@@ -1,0 +1,123 @@
+import csv
+
+# Step 0:You will be making 5 variables in this step! One will be a 
+# string that is 'wgi_glacier_data.csv' (the file to load). The other 4
+# will be whole numbers that are name_index, form_index, latitude_index, and
+# area_index that correspond to the index values that you will need in the 
+file = 'wgi_glacier_data.csv'
+name_index = 3 
+form_index = 7  
+latitude_index = 4  
+area_index = 9  
+
+
+
+# function csv_reader(file)
+# reads a file using csv.reader returns a list of lists
+# with each item being a row, and rows being the values
+# in the csv row. Look back at the CSV lab on reading csv files into
+# a list. Since the file has a header row, you may want to skip it.
+def csv_reader(file):
+    data = []
+    with open(file, 'r', newline='') as csvfile:
+        csv_reader = csv.reader(csvfile)
+        next(csv_reader)
+        for row in csv_reader:
+            data.append(row)
+    return data
+
+# Step 2: longest_glacier_name(glacier_list)
+# param: list
+# return: string
+# goes through the list of glaciers (what is loaded in csv_reader)
+# and returns the glacier with the *largest/longest*. 
+def longest_glacier_name(glacier_list):
+    longest_name = ''
+    for glacier in glacier_list:
+        glacier_name = glacier[name_index]
+        if len(glacier_name) > len(longest_name):
+            longest_name = glacier_name
+    return longest_name
+
+
+# Step 3: most_common_glacier_form(glacier_list)
+# param: list
+# return: string form ('1' or '2' etc)
+# loops through all the glaciers counting the 'forms' (note they are numbers
+# stored as strings). The form the shows up the most will be returned. 
+# As a reminder, there are 10 possible glacier forms. '0', '1', '2',...'9'
+def most_common_glacier_form(glacier_list):
+    form_count = {}
+    for glacier in glacier_list:
+        glacier_form = glacier[form_index]
+        if glacier_form in form_count:
+            form_count[glacier_form] += 1
+        else:
+            form_count[glacier_form] = 1
+    most_common_form = '0'
+    max_count = 0
+    
+    for form, count in form_count.items():
+        if count > max_count:
+            most_common_form = form
+            max_count = count
+    return most_common_form
+
+
+# Step 4: highest_latitude(glacier_list)
+# param: list
+# returns: string
+# This function will take in a list created from the csv reader and will parse 
+# through the list to find the name of the glacier at the highest latitude. 
+def highest_latitude(glacier_list):
+    highest_lat = float('-inf')
+    glacier_with_highest = ''
+    for glacier in glacier_list:
+        glacier_name = glacier[name_index]
+        glacier_latitude = float(glacier[latitude_index])
+        if glacier_latitude > highest_lat:
+            highest_lat = glacier_latitude
+            glacier_with_highest = glacier_name
+    return glacier_with_highest
+
+
+# Step 5: average_area()
+# param: list
+# returns: float
+# This function will take in the list that was created from the csv reader and parse through it to
+# find the area of each glacier and find the average area of all the glaciers in the dataset. 
+# not all glaciers have an area (empty string), treat that area as 0.
+def average_area(glacier_list):
+    total_area = 0.0
+    count = 0
+    for glacier in glacier_list:
+        glacier_area =  glacier[area_index]
+        if glacier_area:
+            total_area += float(glacier_area)
+            count += 1
+    if count > 0:
+        average = total_area / count
+    else:
+        average = 0.0
+    return average
+
+
+# Step 6: main()
+# This is the function that you will call all of the functions that you have already written. 
+# Check the CS150b website to find out exact formating and what should be printed
+def main():
+    glacier_data = csv_reader('wgi_glacier_data.csv')  # Load the data
+    avg_area = average_area(glacier_data)  
+    print(f"Average Area: {avg_area:.2f}")
+    highest_lat_glacier = highest_latitude(glacier_data) 
+    print("Highest Latitude Name:", highest_lat_glacier)
+    common_form = most_common_glacier_form(glacier_data)  
+    print("Most Common Glacier Form:", common_form)
+    longest_name = longest_glacier_name(glacier_data)  
+    print("Longest Glacier Name:", longest_name)
+
+
+## we have this here so your main is automatically called. Make sure to remove any test calls! 
+## uncomment this on submission
+if __name__ == '__main__':
+    main()
